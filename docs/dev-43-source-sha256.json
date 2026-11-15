@@ -1,0 +1,23 @@
+{
+  "scripts/configure_server_dev.py": "3f4cb36cbf2fdab16dfef6c56a806d4632155d489a86c767aa3055527015a329",
+  "src/android/app/src/main/java/com/openminis/app/ui/chat/ChatBackground.kt": "dba146762d5d8d3f862f925680aab2cf70e3d3e993e584ce78acf0a5330eb974",
+  "src/android/app/src/main/java/com/openminis/app/ui/settings/AdvancedMemorySettings.kt": "0d7da12cea4b566a7f3e1ef44f653710cfdd0807f7a9d21f74602d44cd2858a4",
+  "src/android/app/src/main/java/com/openminis/app/ui/settings/SettingsComponents.kt": "cd3163ad78d26eaed8dc6deb49af25f06f521fb05fb051127ccfa1d5b27dc622",
+  "src/android/app/src/main/java/com/openminis/app/ui/settings/SettingsHelpLabel.kt": "7979f74d48857780729699eb3e04ba99697c2308d0fb2de2ee90e835d331b6e8",
+  "src/android/app/src/main/res/values-zh/strings_advanced_memory.xml": "be8996d7ae5a1ffc96c3a29ddcc7a79cfcda10ed65425205a1177c2dbd376d8b",
+  "src/android/app/src/main/res/values-zh/strings_chat_background.xml": "7ad9e26adaf3ea7d224f6493e294c2abdcd1b013c12f8ad7742b0e7025c7572e",
+  "src/android/app/src/main/res/values-zh/strings_chat_glass.xml": "a42222dd486e028dd26a7a39c66691085c62f22a1bec635ffed3b423c88ec2c4",
+  "src/android/app/src/main/res/values-zh/strings_memory_picker.xml": "9fbd19095662053c1d9a51b5749b2677b542808c92a970fadb4af2986d20cbfc",
+  "src/android/app/src/main/res/values-zh/strings_message_backplate.xml": "83c2cad7e8896fe74a28a15a7c40d493e45ab615ac553d61c3cba5296aee2a3a",
+  "src/android/app/src/main/res/values-zh/strings_settings_help.xml": "7d56d3549a4192203f0c0cdc0375bbaec776cca5bba08f3d4b0de60a13bd1e9d",
+  "src/android/app/src/main/res/values/strings_advanced_memory.xml": "744017e62b1c6cdfe257ca02fc2601a6a540d3c77570407bfa0ddfc22a62045f",
+  "src/android/app/src/main/res/values/strings_chat_background.xml": "5c769740ed75224d17f253c85d2a247f17cebff736a78cf261a9e67fdd7f9d99",
+  "src/android/app/src/main/res/values/strings_chat_glass.xml": "7d3802fd8dd5dacf28a11c8d8cb70a98a24c1378a4615a0104982b63dab5359a",
+  "src/android/app/src/main/res/values/strings_memory_picker.xml": "8cac6b9d0efd2ff293b189e35bd263dfb3c82f92776e6eab2f9c62ddbfeb69db",
+  "src/android/app/src/main/res/values/strings_message_backplate.xml": "133c3eab0dc3133a67c1803b5e4f80d889fb67818d4dd900e3b2ca3faf0511e6",
+  "src/android/app/src/main/res/values/strings_settings_help.xml": "14f7e736367f6d4c2373869b62bc65dbece81657d220475f201fa82a349d634d",
+  "src/android/app/src/test/java/com/openminis/app/ui/settings/AdvancedMemoryFoldSourceTest.kt": "2d67800867b1fa96f442e50e300c6e59d835415a2d5bed535139e4aa2abc7a82",
+  "src/android/app/src/test/java/com/openminis/app/ui/settings/AdvancedMemoryUiPolicyTest.kt": "4542b41372057fae24722f2b4c4f7fc51fa78ee931c5b4de837fc0e18275e3d7",
+  "src/android/app/src/test/java/com/openminis/app/ui/settings/AppearanceCopy43Test.kt": "f8f0f8cf0c282f4c656d14c94a3ff2effa3c7a3fd624c2bcbc3f36b5837697ed",
+  "src/android/app/src/test/java/com/openminis/app/ui/settings/SettingsHelpPresentationTest.kt": "36fba690c2021cc4528fe2494ded66ce0dd6577e31ecd0eb4b0dbc8f3c0b7434"
+}

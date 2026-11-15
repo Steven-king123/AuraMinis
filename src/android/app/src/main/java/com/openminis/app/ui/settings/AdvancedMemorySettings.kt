@@ -89,14 +89,29 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
     var testedThreshold by remember { mutableStateOf(config.threshold) }
     var sourceSession by remember { mutableStateOf("") }
 
-    fun runOperation(block: suspend () -> Unit) {
-        if (busy) return
+    // Keep this effect and the operation scope OUTSIDE the enabled-only composition.
+    // Disabling folds the UI; it must not cancel its own config write or clear saved settings.
+    LaunchedEffect(config.enabled) {
+        if (!config.enabled) {
+            picker = null
+            confirmAuto = false
+            confirmReindex = false
+            confirmSummarize = false
+            editing = null
+            editorOpen = false
+            deleting = null
+        }
+    }
+
+    fun runOperation(requireEnabled: Boolean = true, block: suspend () -> Unit) {
+        // Dialog callbacks may outlive the composition that created them.
+        if (!AdvancedMemoryUiPolicy.canStartOperation(store.config.value.enabled, busy, requireEnabled)) return
         busy = true
         error = false
         message = context.getString(R.string.am_working)
         operation = scope.launch {
             try {
-                block()
+                if (!requireEnabled || store.config.value.enabled) block()
                 if (message == context.getString(R.string.am_working)) message = context.getString(R.string.am_done)
             } catch (e: CancellationException) {
                 message = context.getString(R.string.am_cancelled)
@@ -110,8 +125,11 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
             }
         }
     }
-    fun update(change: (AdvancedMemoryConfig) -> AdvancedMemoryConfig) = runOperation {
-        withContext(Dispatchers.IO) { store.updateConfig(change(store.config.value)) }
+    fun update(requireEnabled: Boolean = true, change: (AdvancedMemoryConfig) -> AdvancedMemoryConfig) = runOperation(requireEnabled) {
+        withContext(Dispatchers.IO) {
+            val current = store.config.value
+            if (!requireEnabled || current.enabled) store.updateConfig(change(current))
+        }
     }
     val available = remember(providers) {
         val enabled = providers.instances.filter { it.isEnabled && it.providerType.isUsable }.map { it.id }.toSet()
@@ -138,27 +156,50 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
         return "${entry.model.displayName} · ${provider?.label.orEmpty()}"
     }
 
-    SettingsSection(header = stringResource(R.string.am_title), footer = stringResource(R.string.am_mode_help)) {
+    SettingsSection(header = stringResource(R.string.am_title), headerHelp = stringResource(R.string.am_mode_help)) {
         SettingsSwitchRow(
             title = stringResource(R.string.am_enabled),
-            subtitle = stringResource(if (config.enabled) R.string.am_advanced else R.string.am_standard),
             checked = config.enabled, enabled = !busy,
-            onCheckedChange = { value -> update { it.copy(enabled = value) } },
+            onCheckedChange = { value -> update(requireEnabled = false) { it.copy(enabled = value) } },
+            showDivider = false,
         )
+    }
+
+    // Necessary operation feedback survives collapse; routine status does not.
+    if (AdvancedMemoryUiPolicy.showStatus(config.enabled, busy, error,
+            message == context.getString(R.string.am_cancelled))) {
+        SettingsSection(header = stringResource(R.string.am_status)) {
+            SettingsCardBlock {
+                Text(message.ifBlank { context.getString(R.string.am_ready) },
+                    color = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
+                if (config.enabled && runtimeStatus.isNotBlank()) Text(runtimeStatus, style = MaterialTheme.typography.bodySmall)
+                if (busy) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                    TextButton(onClick = { operation?.cancel() }) { Text(stringResource(R.string.am_cancel_operation)) }
+                }
+            }
+        }
+    }
+
+    // Everything advanced, including all dialogs, leaves composition when disabled.
+    if (config.enabled) {
+    SettingsSection {
+        SettingsCardBlock {
+            SettingsHelpLabel(title = stringResource(R.string.am_models), help = stringResource(R.string.am_embedding_help))
+        }
         SettingsValueRow(stringResource(R.string.am_summarizer), modelLabel(config.summarizerEntryId),
             onClick = if (!busy) ({ picker = "summary" }) else null)
         SettingsValueRow(stringResource(R.string.am_embedding), modelLabel(config.embeddingEntryId),
             onClick = if (!busy) ({ picker = "embedding" }) else null, showDivider = false)
-        SettingsCardBlock { Text(stringResource(R.string.am_embedding_help), style = MaterialTheme.typography.bodySmall) }
     }
 
     SettingsSection(header = stringResource(R.string.am_retrieval)) {
         var threshold by remember(config.threshold) { mutableStateOf(config.threshold) }
         SettingsCardBlock {
-            Text(stringResource(R.string.am_threshold, threshold.toDouble()))
+            SettingsHelpLabel(title = stringResource(R.string.am_threshold, threshold.toDouble()),
+                help = stringResource(R.string.am_threshold_help))
             Slider(value = threshold, onValueChange = { threshold = it }, valueRange = 0f..1f, enabled = !busy,
                 onValueChangeFinished = { update { it.copy(threshold = threshold) } })
-            Text(stringResource(R.string.am_threshold_help), style = MaterialTheme.typography.bodySmall)
         }
         var maxResults by remember(config.maxResults) { mutableStateOf(config.maxResults.toFloat()) }
         SettingsCardBlock {
@@ -168,7 +209,11 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
         }
     }
 
-    SettingsSection(header = stringResource(R.string.am_automatic), footer = stringResource(R.string.am_auto_help)) {
+    SettingsSection(header = stringResource(R.string.am_automatic), headerHelp = stringResource(R.string.am_auto_help),
+        footer = stringResource(R.string.am_auto_cost)) {
+        if (config.summarizerEntryId.isBlank()) SettingsCardBlock {
+            Text(stringResource(R.string.am_need_summarizer), style = MaterialTheme.typography.bodySmall)
+        }
         SettingsSwitchRow(title = stringResource(R.string.am_auto_enable), checked = config.autoConsolidate,
             enabled = !busy && config.enabled && config.summarizerEntryId.isNotBlank(),
             onCheckedChange = { if (it) confirmAuto = true else update { c -> c.copy(autoConsolidate = false) } },
@@ -181,24 +226,12 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
         }
     }
 
-    SettingsSection(header = stringResource(R.string.am_status)) {
-        SettingsCardBlock {
-            Text(message.ifBlank { context.getString(R.string.am_ready) },
-                color = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
-            if (runtimeStatus.isNotBlank()) Text(runtimeStatus, style = MaterialTheme.typography.bodySmall)
-            if (busy) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
-                TextButton(onClick = { operation?.cancel() }) { Text(stringResource(R.string.am_cancel_operation)) }
-            }
-        }
-    }
-
     val visible = remember(records, category, filter) {
         records.filter { !it.deleted && (category == null || it.kind == category) &&
             (filter.isBlank() || it.content.contains(filter, ignoreCase = true) || it.sourceSessionId.orEmpty().contains(filter, ignoreCase = true)) }
             .sortedByDescending { it.updatedAt }
     }
-    SettingsSection(header = stringResource(R.string.am_manage), footer = stringResource(R.string.am_manage_help)) {
+    SettingsSection(header = stringResource(R.string.am_manage)) {
         SettingsCardBlock {
             OutlinedTextField(value = filter, onValueChange = { filter = it; shown = 25 },
                 label = { Text(stringResource(R.string.am_filter)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
@@ -228,7 +261,7 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
         if (shown < visible.size) SettingsCardBlock { TextButton(onClick = { shown += 25 }) { Text(stringResource(R.string.am_more)) } }
     }
 
-    SettingsSection(header = stringResource(R.string.am_test), footer = stringResource(R.string.am_test_help)) {
+    SettingsSection(header = stringResource(R.string.am_test), headerHelp = stringResource(R.string.am_test_help)) {
         SettingsCardBlock {
             OutlinedTextField(value = query, onValueChange = { query = it; hits = null },
                 label = { Text(stringResource(R.string.am_query)) }, modifier = Modifier.fillMaxWidth())
@@ -280,13 +313,13 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
 
     SettingsSection(header = stringResource(R.string.am_maintenance)) {
         SettingsCardBlock {
-            Text(stringResource(R.string.am_reindex_help), style = MaterialTheme.typography.bodySmall)
+            if (config.embeddingEntryId.isBlank()) Text(stringResource(R.string.am_need_embedding), style = MaterialTheme.typography.bodySmall)
             TextButton(enabled = !busy && config.embeddingEntryId.isNotBlank(), onClick = { confirmReindex = true }) {
                 Text(stringResource(R.string.am_reindex))
             }
             OutlinedTextField(value = sourceSession, onValueChange = { sourceSession = it },
                 label = { Text(stringResource(R.string.am_session_id)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Text(stringResource(R.string.am_summarize_help), style = MaterialTheme.typography.bodySmall)
+            if (config.summarizerEntryId.isBlank()) Text(stringResource(R.string.am_need_summarizer), style = MaterialTheme.typography.bodySmall)
             TextButton(enabled = !busy && config.enabled && config.summarizerEntryId.isNotBlank() && sourceSession.isNotBlank(),
                 onClick = { confirmSummarize = true }) { Text(stringResource(R.string.am_summarize)) }
         }
@@ -305,13 +338,16 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
         )
     }
     if (confirmAuto) MemoryConfirm(stringResource(R.string.am_auto_enable), stringResource(R.string.am_auto_disclosure),
+        confirmLabel = stringResource(R.string.am_enable_action),
         onDismiss = { confirmAuto = false }, onConfirm = { confirmAuto = false; update { it.copy(autoConsolidate = true) } })
     if (confirmReindex) MemoryConfirm(stringResource(R.string.am_reindex), stringResource(R.string.am_reindex_disclosure),
+        confirmLabel = stringResource(R.string.am_reindex_action),
         onDismiss = { confirmReindex = false }, onConfirm = {
             confirmReindex = false
             runOperation { withContext(Dispatchers.IO) { AdvancedMemoryRuntime.reindex(context) } }
         })
     if (confirmSummarize) MemoryConfirm(stringResource(R.string.am_summarize), stringResource(R.string.am_summarize_disclosure, sourceSession.trim()),
+        confirmLabel = stringResource(R.string.am_summarize_action),
         onDismiss = { confirmSummarize = false }, onConfirm = {
             val session = sourceSession.trim()
             confirmSummarize = false
@@ -321,6 +357,7 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
         MemoryConfirm(stringResource(R.string.am_delete),
             stringResource(R.string.am_delete_disclosure) + "\n\n" +
                 stringResource(R.string.am_record_version, record.revision) + "\n" + record.content.take(240),
+            confirmLabel = stringResource(R.string.am_delete_action),
             onDismiss = { deleting = null }, onConfirm = {
                 deleting = null
                 runOperation {
@@ -347,6 +384,16 @@ private fun AdvancedMemoryContent(store: AdvancedMemoryStore) {
             hits = null
         }
     }, errorMessage = if (error) message else null)
+    } // config.enabled — model picker, confirmations and editor are also folded.
+}
+
+/** Pure UI policy: hiding advanced settings must not hide actionable feedback. */
+internal object AdvancedMemoryUiPolicy {
+    fun canStartOperation(enabled: Boolean, busy: Boolean, requireEnabled: Boolean): Boolean =
+        !busy && (!requireEnabled || enabled)
+
+    fun showStatus(enabled: Boolean, busy: Boolean, failed: Boolean, cancelled: Boolean): Boolean =
+        enabled || busy || failed || cancelled
 }
 
 @Composable
@@ -357,9 +404,11 @@ private fun kindLabel(kind: MemoryKind?): String = stringResource(when (kind) {
 })
 
 @Composable
-private fun MemoryConfirm(title: String, disclosure: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = { Text(disclosure) },
-        confirmButton = { TextButton(onClick = onConfirm) { Text(stringResource(R.string.am_confirm)) } },
+private fun MemoryConfirm(title: String, disclosure: String, confirmLabel: String,
+    onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) },
+        text = { Text(disclosure, modifier = Modifier.verticalScroll(rememberScrollState())) },
+        confirmButton = { TextButton(onClick = onConfirm) { Text(confirmLabel) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.am_cancel)) } })
 }
 
@@ -398,11 +447,6 @@ private fun MemoryModelDialog(title: String, entries: List<ModelEntry>, selected
                         Text(stringResource(R.string.am_picker_clear))
                     }
                 },
-            )
-            if (embeddingFirst) Text(
-                stringResource(R.string.am_picker_embedding_priority),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 8.dp),
             )
             // Clearing a configured model stays available even when a search has no matches.
             SettingsChoiceRow(stringResource(R.string.am_not_selected), selected.isBlank(), { onSelect("") })

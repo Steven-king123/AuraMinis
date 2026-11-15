@@ -233,7 +233,6 @@ fun ChatBackgroundSettings() {
     ) {
         SettingsSwitchRow(
             title = stringResource(R.string.chat_glass_title),
-            subtitle = stringResource(R.string.chat_glass_help),
             checked = state.glassEnabled,
             onCheckedChange = { value -> runOperation { ChatBackgroundStore.setGlassEnabled(application, value) } },
             enabled = enabled,
@@ -247,6 +246,7 @@ fun ChatBackgroundSettings() {
         )
         SettingsValueRow(
             title = stringResource(R.string.chat_background_choose),
+            subtitle = stringResource(R.string.chat_background_image_limit),
             value = stringResource(
                 if (busy || working) R.string.chat_background_working
                 else if (state.hasImage) R.string.chat_background_selected
@@ -301,8 +301,6 @@ fun ChatBackgroundSettings() {
                     enabled = enabled, valueRange = 0f..1f,
                     modifier = Modifier.semantics { contentDescription = messageOpacityDescription },
                 )
-                Text(stringResource(R.string.chat_message_opacity_help), style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(bottom = 8.dp))
             }
         }
         // One shared preview for wallpaper, dim, message opacity, glass and resizing.

@@ -213,6 +213,7 @@ fun SettingsSection(
     header: String? = null,
     footer: String? = null,
     modifier: Modifier = Modifier,
+    headerHelp: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     // [T-android-settings-ui-md3] Section vertical rhythm normalized to the 4dp
@@ -224,7 +225,12 @@ fun SettingsSection(
             .fillMaxWidth()
             .padding(top = 24.dp),
     ) {
-        if (header != null) {
+        if (header != null && headerHelp != null) {
+            SettingsHelpLabel(
+                title = header.uppercaseForDisplay(), help = headerHelp,
+                modifier = Modifier.padding(start = 32.dp, end = 16.dp, bottom = 8.dp),
+            )
+        } else if (header != null) {
             Text(
                 text = header.uppercaseForDisplay(),
                 style = MaterialTheme.typography.labelSmall,
