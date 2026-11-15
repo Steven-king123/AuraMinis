@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -32,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,12 +68,34 @@ data class ChatBackgroundState(
 }
 
 /**
- * Shared appearance_prefs observation. Register before refreshing to avoid a missed write;
- * each mounted chat/settings instance unregisters automatically when disposed.
+ * Share the holder, not its value: appearance updates invalidate only consumers that read
+ * State.value, rather than replacing a local for the entire chat subtree. No IME state lives here.
+ */
+internal val LocalChatBackgroundState = staticCompositionLocalOf<State<ChatBackgroundState>?> { null }
+
+/** Mount once around a chat root; standalone settings/components retain their own observer. */
+@Composable
+fun ChatBackgroundStateProvider(state: State<ChatBackgroundState>, content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalChatBackgroundState provides state) {
+        content()
+    }
+}
+
+/** Reuse a root's observation without touching preferences or launching another file check. */
+@Composable
+fun rememberChatBackgroundState(): State<ChatBackgroundState> {
+    val sharedState = LocalChatBackgroundState.current
+    if (sharedState != null) return sharedState
+    return rememberOwnedChatBackgroundState()
+}
+
+/**
+ * Owned appearance_prefs observation. Register before refreshing to avoid a missed write;
+ * each owner unregisters automatically when disposed.
  * File existence is checked on IO at mount and filename changes, never during composition.
  */
 @Composable
-fun rememberChatBackgroundState(): State<ChatBackgroundState> {
+private fun rememberOwnedChatBackgroundState(): State<ChatBackgroundState> {
     val context = LocalContext.current.applicationContext
     val prefs = remember(context) { getAppearancePrefs(context) }
     fun readDim() = ChatBackgroundPolicy.dim(

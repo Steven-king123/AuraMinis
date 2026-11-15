@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.ExperimentalHazeApi
+import dev.chrisbanes.haze.HazeInputScale
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
@@ -67,6 +69,7 @@ fun Modifier.chatGlassSource(zIndex: Float = 0f): Modifier {
  * OFF retains the caller's existing background; pre-31 uses an opaque safe surface.
  * Material Surface/TopAppBar/TextField containers inside must be transparent when ON.
  */
+@OptIn(ExperimentalHazeApi::class)
 @Composable
 fun Modifier.chatGlassSurface(shape: Shape, fallback: Color): Modifier {
     val glass = LocalChatGlass.current
@@ -85,7 +88,11 @@ fun Modifier.chatGlassSurface(shape: Shape, fallback: Color): Modifier {
         fallbackTint = HazeTint(safeFallback),
     )
     return clip(shape)
-        .hazeEffect(state = glass.hazeState, style = style)
+        .hazeEffect(state = glass.hazeState, style = style) {
+            // Half-resolution input in each axis; a quality/performance tradeoff,
+            // not pixel-equivalent to full resolution. Sources remain live during IME motion.
+            inputScale = HazeInputScale.Fixed(0.5f)
+        }
         .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), shape)
 }
 

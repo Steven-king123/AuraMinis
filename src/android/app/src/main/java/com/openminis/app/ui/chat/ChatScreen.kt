@@ -2104,10 +2104,11 @@ fun ChatScreen(
     // users who had scrolled up to read history and then opened the keyboard
     // to send a follow-up — auto-follow then yanked them away from where
     // they were reading.
-    val imeBottomPx = WindowInsets.ime.getBottom(LocalDensity.current)
-    LaunchedEffect(imeBottomPx) {
-        if (userScrolledAway && isNearBottom.value) userScrolledAway = false
-    }
+    ChatImeBottomRecoveryEffect(
+        userScrolledAway = { userScrolledAway },
+        isNearBottom = isNearBottom,
+        onReset = { userScrolledAway = false },
+    )
     // [T-android-tool-autoscroll] Start-of-turn edge from ViewModel: resume() /
     // retryLast() / retryFromMessage() / rerunFromToolBlock() emit Unit on
     // forceScrollToBottom because they don't append a new user-message row, so
@@ -2970,8 +2971,10 @@ fun ChatScreen(
         // map (which is last-writer-wins across sessions).
         LocalMarkdownSessionId provides sessionId,
     ) {
-    val wallpaperState by rememberChatBackgroundState()
-    ChatGlassHost {
+    val wallpaperStateHolder = rememberChatBackgroundState()
+    val wallpaperState by wallpaperStateHolder
+    ChatBackgroundStateProvider(wallpaperStateHolder) {
+    ChatGlassHost(enabled = wallpaperState.glassEnabled) {
     Box(Modifier.fillMaxSize().background(ChatColors.background)) {
     // One complete wallpaper source always covers the top bar too. Only the
     // adaptive variant consumes IME insets; controls are never children of this source.
@@ -8262,6 +8265,7 @@ fun ChatScreen(
 
     } // full viewport wallpaper layer
     } // ChatGlassHost
+    } // ChatBackgroundStateProvider
 
     // Browser bottom sheet
     if (showBrowserSheet) {

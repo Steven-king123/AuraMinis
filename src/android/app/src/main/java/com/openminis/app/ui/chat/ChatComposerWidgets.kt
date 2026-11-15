@@ -383,9 +383,11 @@ internal fun InputCircleButton(
     Box(
         modifier = Modifier
             .size(38.dp)
-            // Only the + / slash circle's backing is glass; its glyph stays sharp.
-            // OFF uses the original fill, with the original border kept below.
-            .chatGlassSurface(shape = CircleShape, fallback = ChatColors.inputIconBg)
+            // Composer-only control: the parent card owns the live glass effect.
+            // Retain the original fill/border without allocating another Haze effect.
+            // ChatComposerGlassOwnershipTest guards every call site; standalone reuse
+            // must supply its own glass parent (or explicitly restore a fallback).
+            .background(ChatColors.inputIconBg, CircleShape)
             .border(0.5.dp, ChatColors.inputIconBorder, CircleShape)
             .clip(CircleShape)
             .clickable(onClick = onClick),
@@ -421,12 +423,9 @@ internal fun MicButton(
     Box(
         modifier = Modifier
             .size(38.dp)
-            // Keep the recording warning fill verbatim; only idle mic/keyboard
-            // backing is glass. The icon and locale badge are never blurred.
-            .then(
-                if (isRecording) Modifier.background(bg, CircleShape)
-                else Modifier.chatGlassSurface(shape = CircleShape, fallback = bg),
-            )
+            // Composer-only, like InputCircleButton: inherit the parent's live
+            // glass, keeping both idle fill and red recording warning unchanged.
+            .background(bg, CircleShape)
             .border(0.5.dp, borderColor, CircleShape)
             .clip(CircleShape)
             .combinedClickable(
