@@ -466,7 +466,7 @@ class ScheduledTaskManager(private val context: Context) {
                 // which chat created the task; an edit must not forget it.
                 creatorSessionId = incoming.creatorSessionId ?: prev.creatorSessionId,
             )
-        const val ACTION_FIRE = "com.openminis.app.scheduled.FIRE"
+        const val ACTION_FIRE = com.openminis.app.BuildConfig.APPLICATION_ID + ".scheduled.FIRE"
         const val EXTRA_TASK_ID = "task_id"
         const val EXTRA_TRIGGER_AT = "trigger_at"
         /** [T-port-sched-notif-single] The retired per-task completion channel. */

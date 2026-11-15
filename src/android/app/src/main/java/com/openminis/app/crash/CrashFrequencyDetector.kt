@@ -661,9 +661,9 @@ object CrashFrequencyDetector {
             val uri = FileProvider.getUriForFile(ctx, authority, zip)
             val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(Date())
             val subject = ctx.getString(R.string.crash_freq_email_subject, date)
-            // Project crash-report inbox — a public alias, safe to ship in
-            // open-source builds (replaced the maintainer's personal email).
-            val recipient = "dev@openminis.app"
+            // AuraMinis has no configured private report inbox. Let the user
+            // choose a recipient; never prefill the upstream project's address.
+            val recipient = ""
 
             val launched: Boolean = if (emailOnly) {
                 tryLaunchMailto(ctx, recipient, subject, uri)
@@ -738,7 +738,7 @@ object CrashFrequencyDetector {
                 // the extension hint, so this is what gets the chip to
                 // appear in Gmail.
                 type = "application/zip"
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
+                if (recipient.isNotBlank()) putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
                 putExtra(Intent.EXTRA_SUBJECT, subject)
                 putExtra(Intent.EXTRA_TEXT, body)
                 putExtra(Intent.EXTRA_STREAM, attachment)

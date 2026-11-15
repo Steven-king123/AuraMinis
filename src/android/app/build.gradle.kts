@@ -33,11 +33,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.openminis.app"
+        applicationId = "io.github.stevenking123.auraminis"
         minSdk = 26
         targetSdk = 35
-        versionCode = 37
-        versionName = "1.15"
+        // AuraMinis starts an independent release/version/signing lineage.
+        versionCode = 44
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -63,7 +64,7 @@ android {
         // prerelease flag and cut a tag at its first '-') see them as version
         // 0 and never offer them. UPDATE_CHANNEL is the channel a fresh
         // install starts on; the user can switch to beta in About.
-        buildConfigField("String", "RELEASE_REPO", "\"OpenMinis/OpenMinis\"")
+        buildConfigField("String", "RELEASE_REPO", "\"Steven-king123/OpenMinis\"")
         buildConfigField("String", "UPDATE_CHANNEL", "\"stable\"")
 
         ndk {
@@ -97,7 +98,8 @@ android {
         // on `debug` therefore do not represent what users run. `perf` keeps
         // the debug server and probes (DEV_TOOLS) so the measurement harness
         // works, but is profileable/AOT-compilable like a release build.
-        // Same debug signing key as release, so it installs in place.
+        // Developer-only debug signing. Release is unsigned and must use its
+        // own persistent key; perf/debug are NOT release upgrade artifacts.
         create("perf") {
             initWith(getByName("debug"))
             isDebuggable = false
@@ -107,6 +109,11 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
+            isDebuggable = false
+            buildConfigField("boolean", "DEV_TOOLS", "false")
+            // Unsigned by design: sign offline with the persistent AuraMinis
+            // release key. Never fall back to a machine-local debug key.
+            signingConfig = null
             // [OpenMinis#363] Produce native-debug-symbols.zip alongside the
             // APK so a stripped release .so can still be symbolicated after
             // the fact (`ndk-stack -sym`, or upload to Play Console). Without
@@ -126,37 +133,27 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
-    // [T15-channels] Where a build is distributed. Same applicationId, same
-    // signing and same versionCode for both, so either installs over the other.
-    // - github: the APK attached to GitHub Releases. Checks for updates on its
-    //   own (ON_START, throttled) and shows the update badges.
-    // - store: the app-store build (AAB). Never checks on its own and never
-    //   shows a badge; About's manual "Check for Updates" still works and
-    //   downloads + installs from GitHub like the github build.
-    // IN_APP_INSTALL gates the download-and-install step. It is true for both
-    // today; Google Play forbids self-installing APKs, so a Play listing would
-    // flip it to false for `store` (show the release page instead).
-    // `github` is the default flavor: plain assembleDebug / installDebug /
-    // testDebugUnitTest keep meaning the build everyone already uses (see the
-    // aliases after this block).
+    // AuraMinis retains distribution variants but must NEVER consume official
+    // OpenMinis updates. Disable manual/automatic updates and APK self-install
+    // in EVERY flavor until an independent, signed update pipeline exists.
+    // `github` remains the default flavor for the legacy task aliases below.
     flavorDimensions += "distribution"
     productFlavors {
         create("github") {
             dimension = "distribution"
             isDefault = true
-            buildConfigField("boolean", "SELF_UPDATE", "true")
-            buildConfigField("boolean", "AUTO_UPDATE_CHECK", "true")
-            buildConfigField("boolean", "IN_APP_INSTALL", "true")
+            buildConfigField("boolean", "SELF_UPDATE", "false")
+            buildConfigField("boolean", "AUTO_UPDATE_CHECK", "false")
+            buildConfigField("boolean", "IN_APP_INSTALL", "false")
         }
         create("store") {
             dimension = "distribution"
-            buildConfigField("boolean", "SELF_UPDATE", "true")
+            buildConfigField("boolean", "SELF_UPDATE", "false")
             buildConfigField("boolean", "AUTO_UPDATE_CHECK", "false")
-            buildConfigField("boolean", "IN_APP_INSTALL", "true")
+            buildConfigField("boolean", "IN_APP_INSTALL", "false")
         }
     }
 

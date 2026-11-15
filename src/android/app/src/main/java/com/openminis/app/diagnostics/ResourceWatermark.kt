@@ -221,10 +221,11 @@ object ResourceWatermark {
             field++
         }
         val name = if (field < 5 || i >= line.length) "[anon]" else line.substring(i).trim()
-        val dataDir = name.indexOf("/com.openminis.app/")
+        val packagePath = "/${com.openminis.app.BuildConfig.APPLICATION_ID}/"
+        val dataDir = name.indexOf(packagePath)
         val short = if (dataDir >= 0 && name.startsWith("/data/")) {
             // Keep the app-relative top directory (files, cache, databases...) only.
-            val rest = name.substring(dataDir + "/com.openminis.app/".length)
+            val rest = name.substring(dataDir + packagePath.length)
             "<app>/" + rest.substringBefore('/')
         } else name
         return nameKey(short)

@@ -29,12 +29,12 @@ object AppIconRepository {
     private const val TAG = "AppIconRepository"
     private const val PREFS = "app_icon_prefs"
     private const val KEY_SELECTED_ID = "selected_icon_id"
-    private const val PACKAGE_NAME = "com.openminis.app"
+    private const val CLASS_NAMESPACE = "com.openminis.app"
 
     enum class Variant(val id: String, val aliasClass: String) {
-        Auto("auto", "$PACKAGE_NAME.MainActivityIconAuto"),
-        ClassicLight("classic_light", "$PACKAGE_NAME.MainActivityIconLight"),
-        ClassicDark("classic_dark", "$PACKAGE_NAME.MainActivityIconDark"),
+        Auto("auto", "$CLASS_NAMESPACE.MainActivityIconAuto"),
+        ClassicLight("classic_light", "$CLASS_NAMESPACE.MainActivityIconLight"),
+        ClassicDark("classic_dark", "$CLASS_NAMESPACE.MainActivityIconDark"),
         ;
 
         companion object {
@@ -62,7 +62,8 @@ object AppIconRepository {
         val pm = ctx.packageManager
         try {
             for (variant in Variant.entries) {
-                val component = ComponentName(ctx, variant.aliasClass)
+                // Package identity follows applicationId; alias names follow namespace.
+                val component = ComponentName(ctx.packageName, variant.aliasClass)
                 val desiredState = if (variant == target) {
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 } else {
