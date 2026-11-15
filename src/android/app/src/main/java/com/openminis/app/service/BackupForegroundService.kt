@@ -285,7 +285,7 @@ class BackupForegroundService : Service() {
         const val CHANNEL_ID = "backup"
         private const val PROGRESS_ID = 4201
         private const val OUTCOME_ID = 4202
-        private const val ACTION_STOP = "com.openminis.app.backup.STOP"
+        private const val ACTION_STOP = com.openminis.app.BuildConfig.APPLICATION_ID + ".backup.STOP"
         internal const val PROGRESS_THROTTLE_MS = 1_000L
         /** 6 h — the dataSync budget; a lock beyond it would outlive the service. */
         internal const val WAKE_LOCK_CAP_MS = 6 * 60 * 60 * 1000L

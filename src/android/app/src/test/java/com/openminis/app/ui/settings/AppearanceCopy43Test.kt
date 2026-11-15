@@ -134,8 +134,15 @@ class AppearanceCopy43Test {
             "Tools" to "7207ddba89f133d84b18bc401c3e71d01fbf14bac5c18fe1172383fcc6b0b7ef",
             "Prompt" to "f08a6b62855262a41812f9c76679e8b8ae10bd992a1a851e8b4902d8af371568",
         ).forEach { (name, expected) ->
-            assertEquals("Dev43 may simplify UI, not Dev42 memory core: $name", expected,
-                digest(ProductionSources.read("memory/AdvancedMemory$name.kt")))
+            val current = ProductionSources.read("memory/AdvancedMemory$name.kt")
+            // AuraMinis isolates only the alarm action under its applicationId.
+            // Normalize that reviewed identity-only change; retain the algorithm hash guard.
+            val comparable = if (name == "IdleScheduler") current.replace(
+                "private const val ACTION = com.openminis.app.BuildConfig.APPLICATION_ID + \".memory.IDLE\"",
+                "private const val ACTION = \"com.openminis.app.memory.IDLE\"",
+            ) else current
+            assertEquals("Dev43 algorithm baseline (except isolated alarm identity): $name", expected,
+                digest(comparable))
         }
     }
 }

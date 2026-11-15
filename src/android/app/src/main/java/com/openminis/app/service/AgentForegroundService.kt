@@ -125,7 +125,7 @@ class AgentForegroundService : Service() {
         // a public SDK constant; this is the extras key the Android 16
         // framework reads ("android.requestPromotedOngoing").
         private const val EXTRA_REQUEST_PROMOTED_ONGOING = "android.requestPromotedOngoing"
-        private const val ACTION_STOP = "com.openminis.app.STOP_AGENT_SERVICE"
+        private const val ACTION_STOP = com.openminis.app.BuildConfig.APPLICATION_ID + ".STOP_AGENT_SERVICE"
 
         /**
          * Starts or updates the foreground service with current status.

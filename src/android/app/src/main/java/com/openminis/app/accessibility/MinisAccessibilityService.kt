@@ -29,7 +29,10 @@ class MinisAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val TAG = "MinisA11y"
-        const val SERVICE_ID = "com.openminis.app/.accessibility.MinisAccessibilityService"
+        val SERVICE_ID: String = android.content.ComponentName(
+            com.openminis.app.BuildConfig.APPLICATION_ID,
+            MinisAccessibilityService::class.java.name,
+        ).flattenToShortString()
         private const val EVENT_RING_CAP = 1024
 
         @Volatile

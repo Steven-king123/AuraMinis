@@ -108,11 +108,33 @@ fun AboutScreen(onBack: () -> Unit) {
             )
         }
 
+        Text(
+            stringResource(R.string.about_fork_notice),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+        )
+        Text(
+            stringResource(R.string.about_upstream_attribution),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+        )
+
         SettingsSection(header = stringResource(R.string.about_links)) {
             SettingsRow(
                 icon = Icons.Outlined.Code,
                 iconColor = tileBlue,
-                title = stringResource(R.string.about_github_repository),
+                title = stringResource(R.string.about_fork_repository),
+                onClick = { openExternalUrl(context, "https://github.com/Steven-king123/OpenMinis") },
+                trailing = { ExternalLinkIcon() },
+            )
+            SettingsRow(
+                icon = Icons.Outlined.Code,
+                iconColor = tileBlue,
+                title = stringResource(R.string.about_upstream_repository),
                 // Settings → ABOUT siblings (Privacy Policy / Submit GitHub
                 // Issues) all use openExternalUrl directly. The
                 // LocalInAppBrowserLauncher ambient defaults to a no-op when

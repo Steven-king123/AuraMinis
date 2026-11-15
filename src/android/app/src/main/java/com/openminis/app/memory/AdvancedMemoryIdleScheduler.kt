@@ -22,7 +22,7 @@ import org.json.JSONObject
 internal object AdvancedMemoryIdleScheduler {
     private const val PREFS = "advanced_memory_idle"
     private const val PREFIX = "pending:"
-    private const val ACTION = "com.openminis.app.memory.IDLE"
+    private const val ACTION = com.openminis.app.BuildConfig.APPLICATION_ID + ".memory.IDLE"
     private val lock = Any()
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private fun alarm(context: Context) = context.getSystemService(AlarmManager::class.java)

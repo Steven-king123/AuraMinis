@@ -235,7 +235,7 @@ object UserAskNotifier {
 
     private fun broadcast(ask: PendingAsk, index: Int, action: String, mutable: Boolean): PendingIntent {
         val intent = Intent(app, UserAskNotificationReceiver::class.java)
-            .setAction("com.openminis.app.USER_ASK_ANSWER")
+            .setAction("${app.packageName}.USER_ASK_ANSWER")
             // Distinct data per action, so PendingIntents never collapse into one.
             .setData(Uri.parse("minis-userask://${ask.requestId}/$index/$action"))
             .putExtra(EXTRA_REQUEST_ID, ask.requestId)
