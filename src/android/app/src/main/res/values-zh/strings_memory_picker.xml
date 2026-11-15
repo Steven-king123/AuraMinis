@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="am_picker_search">搜索模型名称、ID 或提供商</string>
+    <string name="am_picker_clear">清空</string>
+    <string name="am_picker_no_matches">没有匹配的模型，请尝试其他名称、ID 或提供商。</string>
+</resources>

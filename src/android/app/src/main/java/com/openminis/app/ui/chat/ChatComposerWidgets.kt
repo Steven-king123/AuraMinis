@@ -383,6 +383,10 @@ internal fun InputCircleButton(
     Box(
         modifier = Modifier
             .size(38.dp)
+            // Composer-only control: the parent card owns the live glass effect.
+            // Retain the original fill/border without allocating another Haze effect.
+            // ChatComposerGlassOwnershipTest guards every call site; standalone reuse
+            // must supply its own glass parent (or explicitly restore a fallback).
             .background(ChatColors.inputIconBg, CircleShape)
             .border(0.5.dp, ChatColors.inputIconBorder, CircleShape)
             .clip(CircleShape)
@@ -419,6 +423,8 @@ internal fun MicButton(
     Box(
         modifier = Modifier
             .size(38.dp)
+            // Composer-only, like InputCircleButton: inherit the parent's live
+            // glass, keeping both idle fill and red recording warning unchanged.
             .background(bg, CircleShape)
             .border(0.5.dp, borderColor, CircleShape)
             .clip(CircleShape)
@@ -1131,7 +1137,10 @@ internal fun FloatingToolStatusBar(
                 .height(barHeight)
                 .align(Alignment.BottomCenter)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.Black.copy(alpha = 0.06f), spotColor = Color.Black.copy(alpha = 0.12f))
-                .background(ChatColors.inputBg, RoundedCornerShape(10.dp))
+                // Blur only the Minis Computer bar's backing, not its title,
+                // status/pager icons or the separately overlaid thumbnail.
+                // Expanded tool details and preview content keep their own surfaces.
+                .chatGlassSurface(shape = RoundedCornerShape(10.dp), fallback = ChatColors.inputBg)
                 .border(0.5.dp, ChatColors.toolBorder, RoundedCornerShape(10.dp))
                 .padding(start = barStartPadding, end = 12.dp),
             verticalAlignment = Alignment.CenterVertically,

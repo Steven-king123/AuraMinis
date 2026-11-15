@@ -1,0 +1,11 @@
+{
+  "scripts/configure_server_dev.py": "8eb33681acd2ea57ef861073ea657522af7007600ef49f542b6c04bbcfa2c072",
+  "src/android/app/src/main/java/com/openminis/app/ui/chat/ChatBackground.kt": "93589544bf49eb1e5fb26f1296ea3b3f7aeea6d71e8c55514374390ba154056c",
+  "src/android/app/src/main/java/com/openminis/app/ui/chat/ChatComposerWidgets.kt": "b0eb4c870c25d01e7f0236098c3bea84260984901395f7e82ed2132c36f44191",
+  "src/android/app/src/main/java/com/openminis/app/ui/chat/ChatGlass.kt": "0e5d8d04d5e54225d11d52e993e75a7d1d26694f029f01a3dcc5589cb358cbbf",
+  "src/android/app/src/main/java/com/openminis/app/ui/chat/ChatImeBottomRecovery.kt": "c5fd0741010d919c27d370161b3df4c18a0dde8724ba8be2e2b78dbabbf42bb4",
+  "src/android/app/src/main/java/com/openminis/app/ui/chat/ChatScreen.kt": "0b9a6857702aebb8030e2ef1b9aed6939aa350656ea643444a2113568d8ba093",
+  "src/android/app/src/test/java/com/openminis/app/ui/chat/ChatBackgroundSharedStateSourceTest.kt": "6a8c076b731bf7b6dcfe85aa05cf3387651a7f9fc57e121cb75d9fbdca36255f",
+  "src/android/app/src/test/java/com/openminis/app/ui/chat/ChatComposerGlassOwnershipTest.kt": "299ddd8aa1495b629fe3fff25c3ddc8a288c0f3d15ec8d5d70f5e2f75495e540",
+  "src/android/app/src/test/java/com/openminis/app/ui/chat/ChatImeBottomRecoveryTest.kt": "bac97e0848720071c10ae9ce4e10ef54593e1f524f558c7fe2212a3cafd46321"
+}

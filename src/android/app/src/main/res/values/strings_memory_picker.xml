@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="am_picker_search">Search model name, ID or provider</string>
+    <string name="am_picker_clear">Clear</string>
+    <string name="am_picker_no_matches">No matching models. Try another name, ID or provider.</string>
+</resources>

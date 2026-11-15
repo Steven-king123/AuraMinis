@@ -2104,10 +2104,11 @@ fun ChatScreen(
     // users who had scrolled up to read history and then opened the keyboard
     // to send a follow-up — auto-follow then yanked them away from where
     // they were reading.
-    val imeBottomPx = WindowInsets.ime.getBottom(LocalDensity.current)
-    LaunchedEffect(imeBottomPx) {
-        if (userScrolledAway && isNearBottom.value) userScrolledAway = false
-    }
+    ChatImeBottomRecoveryEffect(
+        userScrolledAway = { userScrolledAway },
+        isNearBottom = isNearBottom,
+        onReset = { userScrolledAway = false },
+    )
     // [T-android-tool-autoscroll] Start-of-turn edge from ViewModel: resume() /
     // retryLast() / retryFromMessage() / rerunFromToolBlock() emit Unit on
     // forceScrollToBottom because they don't append a new user-message row, so
@@ -2970,8 +2971,18 @@ fun ChatScreen(
         // map (which is last-writer-wins across sessions).
         LocalMarkdownSessionId provides sessionId,
     ) {
+    val wallpaperStateHolder = rememberChatBackgroundState()
+    val wallpaperState by wallpaperStateHolder
+    ChatBackgroundStateProvider(wallpaperStateHolder) {
+    ChatGlassHost(enabled = wallpaperState.glassEnabled) {
+    Box(Modifier.fillMaxSize().background(ChatColors.background)) {
+    // One complete wallpaper source always covers the top bar too. Only the
+    // adaptive variant consumes IME insets; controls are never children of this source.
+    Box(Modifier.matchParentSize().then(if (wallpaperState.resizeWithInput) Modifier.imePadding() else Modifier)) {
+        ChatBackgroundLayer(Modifier.matchParentSize().chatGlassSource())
+    }
     Scaffold(
-        containerColor = ChatColors.background,
+        containerColor = Color.Transparent,
         contentWindowInsets = WindowInsets(0),
         // [T-port-sched-pill] The top bar slot is the app bar plus, below it,
         // the scheduled-task pill, so the list (padded by the Scaffold) starts
@@ -2979,6 +2990,7 @@ fun ChatScreen(
         // its old indentation to keep this diff small.
         topBar = { Column {
             TopAppBar(
+                modifier = Modifier.chatGlassSurface(RoundedCornerShape(0.dp), ChatColors.background),
                 title = {
                     // iOS-style centered layout: "Minis" + group row + provider·model row
                     Box(
@@ -3739,8 +3751,8 @@ fun ChatScreen(
                 },
                 windowInsets = WindowInsets.statusBars,
                 colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = ChatColors.background.copy(alpha = 0.92f),
-                    scrolledContainerColor = ChatColors.background.copy(alpha = 0.92f),
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent,
                 ),
                 // [T-android-topbar-shrink] 76dp → 68dp. The earlier
                 // T-topbar-model-row-clip fix bumped 60dp → 76dp to give the
@@ -3775,6 +3787,7 @@ fun ChatScreen(
                 .imePadding()
                 .onGloballyPositioned { chatPaneWidthPx = it.size.width },
         ) {
+        // Wallpaper is drawn once in the independent full-viewport source above.
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -4643,6 +4656,7 @@ fun ChatScreen(
                         // [T-android-session-entering-dots] Fades the first
                         // rows in under the leaving dots; 1f at all other times.
                         .graphicsLayer { alpha = listEntryAlpha }
+                        .chatGlassSource(zIndex = 1f)
                         // [T-android-userask-edge-bounce] See childScrollWatch.
                         .nestedScroll(childScrollWatch)
                         // [T-android-chat-max-content-width] Cap the reading
@@ -5000,25 +5014,25 @@ fun ChatScreen(
                                 slotKey = "text:${item.block.id}",
                                 markdown = item.messageMarkdown,
                             ) {
-                                // T-android-gc-storm-issue17: collapse oversized frozen
-                                // assistant text before feeding the markdown parser, which
-                                // is the GC-storm hotspot for legacy sessions.
-                                LargeContentGuard(
-                                    content = item.block.content,
-                                    isStreaming = item.isStreaming,
-                                    stableKey = "text:${item.messageId}:${item.block.id}",
-                                ) {
-                                    SideEffect {
-                                        selectionController.rememberMessageMarkdown(item.messageId, item.messageMarkdown)
-                                    }
-                                    StreamingMarkdownText(
+                                ChatMessageBackplate {
+                                    // Keep the original content guard and selection shards.
+                                    LargeContentGuard(
                                         content = item.block.content,
                                         isStreaming = item.isStreaming,
-                                        shardId = TextShardId(
-                                            messageId = item.messageId,
-                                            shardId = "text:${item.block.id}",
-                                        ),
-                                    )
+                                        stableKey = "text:${item.messageId}:${item.block.id}",
+                                    ) {
+                                        SideEffect {
+                                            selectionController.rememberMessageMarkdown(item.messageId, item.messageMarkdown)
+                                        }
+                                        StreamingMarkdownText(
+                                            content = item.block.content,
+                                            isStreaming = item.isStreaming,
+                                            shardId = TextShardId(
+                                                messageId = item.messageId,
+                                                shardId = "text:${item.block.id}",
+                                            ),
+                                        )
+                                    }
                                 }
                             }
                             is FlatChatItem.AssistantMarkdownBlock -> BoundsTrackedBlock(
@@ -5026,30 +5040,31 @@ fun ChatScreen(
                                 slotKey = "mdblock:${item.parentBlockId}:${item.blockIndex}",
                                 markdown = item.messageMarkdown,
                             ) {
-                                // [T-414-usage-tap-band] Rows of the reply's final
-                                // text block carry the capsule's tap band.
-                                UsageTapBandRowScope(
-                                    messageId = item.messageId,
-                                    inFinalTextBlock = item.inFinalTextBlock,
-                                    isLastRow = item.isLastBlockOfMessage,
-                                ) {
-                                LargeContentGuard(
-                                    content = item.rawText,
-                                    isStreaming = item.isStreaming,
-                                    stableKey = "mdblock:${item.messageId}:${item.parentBlockId}:${item.blockIndex}",
-                                ) {
-                                    SideEffect {
-                                        selectionController.rememberMessageMarkdown(item.messageId, item.messageMarkdown)
+                                ChatMessageBackplate {
+                                    // [T-414-usage-tap-band] Keep the final row's tap band.
+                                    UsageTapBandRowScope(
+                                        messageId = item.messageId,
+                                        inFinalTextBlock = item.inFinalTextBlock,
+                                        isLastRow = item.isLastBlockOfMessage,
+                                    ) {
+                                        LargeContentGuard(
+                                            content = item.rawText,
+                                            isStreaming = item.isStreaming,
+                                            stableKey = "mdblock:${item.messageId}:${item.parentBlockId}:${item.blockIndex}",
+                                        ) {
+                                            SideEffect {
+                                                selectionController.rememberMessageMarkdown(item.messageId, item.messageMarkdown)
+                                            }
+                                            MarkdownBlock(
+                                                rawText = item.rawText,
+                                                isStreaming = item.isStreaming,
+                                                shardId = TextShardId(
+                                                    messageId = item.messageId,
+                                                    shardId = "mdblock:${item.parentBlockId}:${item.blockIndex}",
+                                                ),
+                                            )
+                                        }
                                     }
-                                    MarkdownBlock(
-                                        rawText = item.rawText,
-                                        isStreaming = item.isStreaming,
-                                        shardId = TextShardId(
-                                            messageId = item.messageId,
-                                            shardId = "mdblock:${item.parentBlockId}:${item.blockIndex}",
-                                        ),
-                                    )
-                                }
                                 }
                             }
                             is FlatChatItem.AssistantThinking -> {
@@ -5283,27 +5298,27 @@ fun ChatScreen(
                                 slotKey = "legacy",
                                 markdown = item.messageMarkdown,
                             ) {
-                                // [T-414-usage-tap-band] A legacy reply's content is
-                                // its only text and is drawn last: one row, the
-                                // capsule's anchor.
-                                UsageTapBandRowScope(messageId = item.messageId, inFinalTextBlock = true, isLastRow = true) {
-                                LargeContentGuard(
-                                    content = item.content,
-                                    isStreaming = item.isStreaming,
-                                    stableKey = "legacy:${item.messageId}",
-                                ) {
-                                    SideEffect {
-                                        selectionController.rememberMessageMarkdown(item.messageId, item.messageMarkdown)
+                                ChatMessageBackplate {
+                                    // [T-414-usage-tap-band] Legacy content is the final row.
+                                    UsageTapBandRowScope(messageId = item.messageId, inFinalTextBlock = true, isLastRow = true) {
+                                        LargeContentGuard(
+                                            content = item.content,
+                                            isStreaming = item.isStreaming,
+                                            stableKey = "legacy:${item.messageId}",
+                                        ) {
+                                            SideEffect {
+                                                selectionController.rememberMessageMarkdown(item.messageId, item.messageMarkdown)
+                                            }
+                                            StreamingMarkdownText(
+                                                content = item.content,
+                                                isStreaming = item.isStreaming,
+                                                shardId = TextShardId(
+                                                    messageId = item.messageId,
+                                                    shardId = "legacy",
+                                                ),
+                                            )
+                                        }
                                     }
-                                    StreamingMarkdownText(
-                                        content = item.content,
-                                        isStreaming = item.isStreaming,
-                                        shardId = TextShardId(
-                                            messageId = item.messageId,
-                                            shardId = "legacy",
-                                        ),
-                                    )
-                                }
                                 }
                             }
                         }
@@ -6212,6 +6227,7 @@ fun ChatScreen(
                 // from the backdrop by a symmetric soft shadow painted by hand
                 // (Android's Modifier.shadow only casts downward).
                 val inputBgArgb = ChatColors.inputBg.toArgb()
+                val glassInputActive = chatGlassIsActive()
                 val shadowPaint = remember(inputBgArgb) {
                     android.graphics.Paint().apply {
                         color = inputBgArgb
@@ -6349,7 +6365,9 @@ fun ChatScreen(
                                     }
                             } else Modifier,
                         )
+                        .chatGlassSurface(RoundedCornerShape(20.dp), Color.Transparent)
                         .drawBehind {
+                            if (glassInputActive) return@drawBehind
                             val radiusPx = 20.dp.toPx()
                             val canvas = drawContext.canvas.nativeCanvas
                             // Pass 1: symmetric ambient halo — small blur, low alpha.
@@ -8244,6 +8262,10 @@ fun ChatScreen(
         )
         }
     }
+
+    } // full viewport wallpaper layer
+    } // ChatGlassHost
+    } // ChatBackgroundStateProvider
 
     // Browser bottom sheet
     if (showBrowserSheet) {
