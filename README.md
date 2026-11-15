@@ -1,222 +1,77 @@
-# OpenMinis
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/icon-dark.png">
+    <img src="assets/brand/icon-light.png" alt="AuraMinis 图标" width="88" height="88">
+  </picture>
+</p>
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/Platforms-iOS%20%7C%20Android-lightgrey.svg)](#beta-programme)
+<h1 align="center">AuraMinis</h1>
 
-**Your private, on-device AI agent.**
+<p align="center">An unofficial enhanced Android AI assistant fork of OpenMinis.<br>Controllable memory, a customizable look, and comfortable reading.</p>
 
-OpenMinis brings leading models — Claude, GPT, Gemini and more — into a native
-mobile experience, and gives them a real computer to work with: a full Linux
-shell running on your device, browser automation, extensible skills, persistent
-memory, and deep system integration.
+![AuraMinis 品牌横幅](assets/brand/banner.png)
 
-It is free, and fully open source.
+**AuraMinis** 是基于 [OpenMinis](https://github.com/OpenMinis/OpenMinis) 的非官方 Android AI 助手增强分支。在保留上游 Agent 架构与本地工具底座的基础上，围绕日常使用打磨，提供**更可控的长期记忆、更自由的聊天外观，以及更舒适的阅读与交互体验**。
 
-**We believe that in the age of AI, technical design and code are no longer
-where a product's advantage lies. The best agent emerges from a tight feedback
-loop with the people who use it — their expectations and their reports are
-what converge on the product.**
+## 不止于聊天
 
-Official website: **[openminis.app](https://openminis.app)**
+从对话到执行，AuraMinis 延续了 OpenMinis 的移动端 Agent 与工具能力：
 
-<a href="https://apps.apple.com/app/id6759188481">
-  <img alt="Download on the App Store" height="48" src="assets/badge-appstore.svg" />
-</a>
-&nbsp;
-<a href="https://github.com/OpenMinis/OpenMinis/releases">
-  <img alt="Get the APK on GitHub" height="48" src="assets/badge-android.svg" />
-</a>
+- **多模型与多提供商接入**：使用自己的模型配置与凭据，按需接入和切换不同模型。
+- **设备上的 Linux 工作区**：无需获取手机 Root 权限的 Alpine Linux / PRoot 沙箱，支持安装软件包、运行脚本与处理文件，在 Android 系统及应用权限边界内运行。
+- **浏览器与自动化交互**：访问网页、读取资料，借助工具完成操作。
+- **Android 系统工具集成**：按授权使用日历、剪贴板、媒体等设备能力，衔接日常工作流。
+- **Agent 生态**：延续上游的技能扩展（Skills）、文件工作区、持久记忆、MCP、子代理和定时任务能力。
 
-![Minis on iOS — deep research, chat, agent runtime, integrations, iCloud sync and granular permissions](assets/screenshots.png)
+## 为日常使用打磨
 
----
+### 可控的长期记忆
 
-## What it does
+在原版 `GLOBAL.md` 与每日日志之外，新增独立、可管理的结构化高级记忆：
 
-| | |
+- **分层保存与混合检索**：核心记忆保存长期信息，事件摘要记录经历与进展；结合关键词与向量检索，按相关性召回已保存的记忆。
+- **召回由你控制**：分别选择总结模型与向量模型，调整相关性阈值和最多召回数量，没有合适结果时不强塞无关记忆。
+- **管理与测试可视化**：查看、搜索、新增、编辑或删除记录，通过阈值测试观察候选分数及接受原因。
+- **按需开启**：自动整理默认关闭；关闭高级记忆时收起相关入口，重新开启恢复，不清空配置与记录。
+
+> 高级记忆检索已保存的记录，不会自动导入标准记忆或扫描全部历史聊天。[了解更多](docs/ADVANCED-MEMORY.md)。
+
+### 自由定制的聊天外观
+
+- **背景与主题遮罩**：设置全局聊天背景，调节遮罩强度并预览；背景既可固定，也可随键盘与输入框高度自动适配。
+- **实时玻璃效果**：顶栏、输入区与浮动工具状态栏呈现通透的背景模糊与界面层次。
+- **可调消息底色**：设置背景图片后，可统一调整用户消息、助手正文与展开思考区域的底色不透明度，文字本身保持不透明。
+
+背景图片仅用于本地界面，不会作为附件发送给模型。
+
+### 更舒适的阅读与交互
+
+- **原生聊天与公式优化**：保留原生聊天列表，修复部分独立数学公式、列表内公式和流式输出中的解析问题。
+- **更清爽的设置**：记忆模型支持按名称、ID 或提供商搜索；说明按需查看，保留必要的隐私、费用及危险操作确认。
+- **减少重复开销**：优化界面渲染和状态观察，改善启动与键盘升降的交互体验。
+
+## 典型使用场景
+
+- **资料研究与整理**：访问网页收集资料，在 Linux 工作区中分析并生成结构化文件。
+- **借助工具处理任务**：结合系统工具、脚本和 MCP 扩展处理文件转换、日程安排等实际操作，而不只给出文字步骤。
+- **积累项目上下文**：保存长期偏好与阶段进展，随时检索、修正记忆或测试召回效果，减少重复交代背景。
+- **阅读技术内容**：在喜欢的背景和界面风格中，阅读包含列表、表格与数学公式的长回答。
+
+## 获取、文档与构建
+
+AuraMinis 正式安装包正在准备中。可浏览[项目仓库](https://github.com/Steven-king123/OpenMinis)获取源码；构建前请确认所选分支包含需要的增强功能。
+
+| 资源 | 说明 |
 |---|---|
-| **Bring your own model** | Claude, GPT, Gemini and other providers, via your own API keys or account sign-in. |
-| **A real Linux shell** | A sandboxed Alpine Linux environment runs on-device — the agent can install packages, run scripts, and work with real files. |
-| **Device integration** | Health, Calendar, Reminders, Contacts, HomeKit, Bluetooth, Clipboard, Media, Alarms and more, exposed to the agent as tools. |
-| **Browser automation** | The agent can browse and interact with the web on your behalf. |
-| **Skills & memory** | Extensible skills plus persistent memory across sessions. |
-| **Workspaces** | Organise work into separate contexts, addressable via `minis://workspace/`. |
-| **Native offloads** | Heavy or platform-specific work is handed to native code instead of the sandbox. |
+| [高级记忆使用指南](docs/ADVANCED-MEMORY.md) | 记忆类型、模型配置、召回与整理 |
+| [完整构建说明](BUILDING.md) | Android 工具链与编译步骤 |
+| [问题反馈](https://github.com/Steven-king123/OpenMinis/issues) | 提交问题或改进建议 |
+| [MinisSkills](https://github.com/OpenMinis/MinisSkills) · [AwesomeMinis](https://github.com/OpenMinis/AwesomeMinis) | 上游技能与社区资源 |
 
----
+## 隐私、致谢与许可证
 
-## What you can do with Minis
+**隐私与费用**：记忆记录与背景图片可保存在本机；聊天、总结和嵌入操作会按配置将相应文本发送至模型服务，可能产生费用。在设备上运行，不代表所有处理离线。
 
-A few things people actually use it for:
+**上游归属**：感谢 [OpenMinis](https://github.com/OpenMinis/OpenMinis) 提供核心 Agent 架构与工具体系。官方网站：[openminis.app](https://openminis.app)。部分界面与交互设计参考了 [LastChat](https://github.com/Cocolalilal/LastChat)；相关增强在 OpenMinis 代码基础上实现，并使用相应开源组件，第三方代码及依赖的授权以各自许可证为准。
 
-- **Photograph a meal, log the nutrition** — Minis identifies the dishes, estimates
-  calories and macros, and writes them to Apple Health.
-- **Wake up to your timeline** — Shortcuts triggers Minis to fetch your X timeline,
-  summarise it, synthesise speech, and play it as your alarm.
-- **Turn group chatter into tasks** — pull messages from a Telegram group, extract
-  bugs and action items, deduplicate them, and file them into Apple Reminders.
-- **Mount your Obsidian vault** — research, clean up and write Markdown notes back
-  into the vault as a normal workspace.
-- **Share anything into a calendar event** — send a page or message to Minis via the
-  iOS Share Sheet and it creates the event, time and place included.
-
-**→ [OpenMinis/AwesomeMinis](https://github.com/OpenMinis/AwesomeMinis)** — a curated,
-community-contributed collection of use cases and workflows across health,
-productivity, research, finance and developer tooling.
-
----
-
-## Skills
-
-A **skill** is a folder with a `SKILL.md` file — instructions, and optionally scripts,
-references and assets — that the agent loads on demand when a request matches it.
-Metadata stays in context for triggering; the body and bundled resources load only
-when the skill is actually used.
-
-Minis has its own tool system, but it does not require skills written specifically
-for it: **skills built for Claude, Codex, OpenClaw or Hermes Agent generally run in
-Minis as-is.** Skills that have been adapted to Minis' tools simply run better —
-they can reach the Linux shell, device integrations and native offloads directly.
-
-**→ [OpenMinis/MinisSkills](https://github.com/OpenMinis/MinisSkills)** — skills
-adapted for Minis alongside ones built for it from scratch, covering TTS, search,
-media downloads, health analysis, cloud APIs and more.
-
----
-
-## Press
-
-> "the most impressive indie app I've seen in a while"
->
-> — Federico Viticci, [**Open Minis Is the iOS Agent I Wish Siri AI Could Be**](https://www.macstories.net/reviews/open-minis-is-the-ios-agent-i-wish-siri-ai-could-be/),
-> MacStories (July 2026)
-
-> "在很大程度上实现甚至局部超越了 Apple Intelligence"
->
-> — Ye Han, [**这可能是 iPhone 最强 Agent 软件，没有之一 丨Open Minis 入门指南**](https://zhuanlan.zhihu.com/p/2045570157783807562),
-> 知乎 / Zhihu (June 2026)
-
-> "可能是 iOS 端最强 AI Agent"
->
-> — [**Open Minis：可能是 iOS 端最强 AI Agent**](https://www.appinn.com/open-minis/),
-> 小众软件 / Appinn (March 2026)
-
----
-
-## Beta programme
-
-App Store releases can lag behind: every update waits on review, and we hold
-builds back when stability warrants it. The TestFlight build is where fixes
-and new features land first.
-
-**→ [Join the TestFlight beta](https://testflight.apple.com/join/3BdkA5c3)**
-
-On Android, the [releases page](https://github.com/OpenMinis/OpenMinis/releases)
-always carries the latest APK.
-
----
-
-## Building from source
-
-Minis ships a Linux sandbox inside the app, so the native dependencies (iSH on
-iOS, PRoot on Android, FFmpeg, LAME, rclone) and the Alpine rootfs are **built
-from source** rather than committed as binaries.
-
-**→ See [BUILDING.md](BUILDING.md) for the full first-build guide.**
-
-The short version:
-
-```sh
-git clone --recurse-submodules https://github.com/OpenMinis/OpenMinis.git
-cd OpenMinis
-
-# iOS  — needs Go 1.25+ and Xcode's Metal Toolchain
-#        (xcodebuild -downloadComponent MetalToolchain)
-#        order matters: FFmpeg links against LAME
-./deps/build_lame.sh && ./deps/build_ffmpeg.sh
-./deps/build_ish.sh && ./deps/prepare_alpine_rootfs.sh
-./deps/build_rclone_ios.sh
-open src/ios/Minis.xcodeproj
-
-# Android — needs NDK r28+, Go 1.25+ and gomobile
-./deps/build_proot.sh && ./scripts/prepare_android_sandbox.sh
-./deps/build_rclone_android.sh
-mkdir -p src/android/app/libs && cp deps/build/rclone/rclone.aar src/android/app/libs/
-cd src/android && ./gradlew :app:assembleDebug
-```
-
-`BUILDING.md` covers the toolchain requirements per platform, the build-time
-customization templates, and a troubleshooting section for the failure modes
-you are most likely to hit.
-
----
-
-## Repository layout
-
-```
-src/ios/          iOS app (Swift / SwiftUI) + share, widget and file-provider extensions
-src/android/      Android app (Kotlin / Compose) + JNI native code
-src/shared/       Assets shared by both platforms
-deps/             Native dependency build scripts and vendored sources
-docs/specs/       Architecture and interface specifications
-scripts/          Rootfs preparation and developer tooling
-```
-
----
-
-## Acknowledgements
-
-OpenMinis stands on a great deal of open-source work. Our thanks to the
-maintainers of these projects — the full inventory, with versions and license
-terms, is in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
-
-**The sandbox** — the heart of the product:
-
-- **[iSH](https://github.com/ish-app/ish)** (GPLv3) — Linux usermode emulation on
-  iOS. We run [an ARM64 fork](https://github.com/OpenMinis/ish-arm64).
-- **[PRoot](https://github.com/termux/proot)** (GPLv2) — user-space chroot for the
-  Android sandbox, via [our fork](https://github.com/OpenMinis/proot);
-  **[talloc](https://talloc.samba.org)** (LGPLv3+) underpins it.
-- **[Alpine Linux](https://alpinelinux.org)** — the minirootfs the sandbox boots.
-
-**Media & text** — [FFmpeg](https://ffmpeg.org) (LGPL-2.1+),
-[LAME](https://lame.sourceforge.io) (LGPL), [cppjieba](https://github.com/yanyiwu/cppjieba) (MIT),
-[KaTeX](https://katex.org) (MIT).
-
-**iOS** — [SwiftAnthropic](https://github.com/jamesrochabrun/SwiftAnthropic),
-[SwiftMath](https://github.com/mgriebling/SwiftMath),
-[RealTimeCutVADLibrary](https://github.com/helloooideeeeea/RealTimeCutVADLibrary) (all MIT),
-[swift-cmark](https://github.com/swiftlang/swift-cmark) (BSD-2-Clause), and the
-Apple / Swift Server Workgroup packages (Apache-2.0).
-
-**Android** — [AndroidX & Jetpack Compose](https://developer.android.com/jetpack),
-[OkHttp](https://square.github.io/okhttp/), [Coil](https://coil-kt.github.io/coil/),
-[kotlinx](https://github.com/Kotlin) serialization & coroutines,
-[multiplatform-markdown-renderer](https://github.com/mikepenz/multiplatform-markdown-renderer),
-[Reorderable](https://github.com/Calvin-LL/Reorderable), [ACRA](https://github.com/ACRA/acra)
-(all Apache-2.0), and [Shizuku](https://github.com/RikkaApps/Shizuku-API) (MIT).
-
----
-
-## License
-
-OpenMinis is licensed under the **[GNU General Public License v3.0](LICENSE)**.
-
-The app links GPL-licensed components — [iSH](https://github.com/OpenMinis/ish-arm64)
-(GPLv3) and [PRoot](https://github.com/OpenMinis/proot) (GPLv2) — so the combined
-work is distributed under GPLv3. Bundled third-party licenses are listed in
-[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
-
----
-
-## Community
-
-- **Telegram**: [Join the group](https://t.me/+2NzhOJuzRyI1YmM1)
-- **Issues**: Bug reports, feature requests and discussion via
-  [GitHub Issues](https://github.com/OpenMinis/OpenMinis/issues)
-
-This repository is a mirror of a private development tree, so it **does not
-accept pull requests** — there is nowhere for them to land. Issues are the way
-to shape the product, and [AwesomeMinis](https://github.com/OpenMinis/AwesomeMinis)
-and [MinisSkills](https://github.com/OpenMinis/MinisSkills) both do take
-contributions. See [CONTRIBUTING.md](CONTRIBUTING.md).
+**许可证**：本项目沿用 [GNU GPL v3.0](LICENSE)。上游及第三方组件的版权与授权信息见 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)。
