@@ -1,48 +1,61 @@
-# Contributing
+# 参与 AuraMinis
 
-Thanks for your interest in Minis.
+感谢你关注 AuraMinis！这是基于 [OpenMinis](https://github.com/OpenMinis/OpenMinis) 的非官方 Android 增强 Fork，重点改进记忆管理、聊天外观与阅读交互。本指南适用于本仓库，不代表上游项目的贡献政策。
 
-## We do not accept pull requests
+欢迎提交问题、改进建议、文档修正和小范围代码贡献。较大的功能、架构或依赖变更，请先通过 Issue 讨论，避免投入后发现不符合项目方向。提交不代表一定会被合并。
 
-This repository is a **mirror**. Development happens in a private tree and is
-published here on each release, so a pull request opened against this
-repository has nowhere to land — merging it would be overwritten by the next
-sync, and we cannot merge it upstream either.
+## 问题反馈
 
-Please do not spend your time preparing one. If you have already opened a PR,
-we will close it with a pointer back to this document; that is not a judgement
-on the work.
+请先搜索 [已有 Issues](https://github.com/Steven-king123/OpenMinis/issues)，确认是否已有相同问题。反馈时尽量提供：
 
-## What we do want
+- 应用版本与来源分支、Android 版本，以及必要的设备和输入法信息。
+- 预期行为、实际行为、复现步骤与复现频率。
+- 相关开关状态；涉及外观或卡顿时，说明是否开启背景、玻璃及背景缩放。
+- 涉及模型时，提供模型名称、提供商类型和必要的错误信息，**不要提供密钥**。
+- 经过脱敏的截图、示例内容或相关日志片段。
 
-Everything else. The product is shaped by what people report:
+本 Fork 独有的问题请在本仓库报告。只有确认能在官方版本复现时，再按上游规则向其反馈；不要默认要求上游维护本 Fork 的改动。
 
-- **[Open an issue](https://github.com/OpenMinis/OpenMinis/issues)** — bugs,
-  crashes, papercuts, feature requests, questions about behaviour. A clear
-  report is worth more to us than a patch, because it tells us what to build.
-- **Share what you have built** — real workflows and use cases go in
-  **[AwesomeMinis](https://github.com/OpenMinis/AwesomeMinis)**, which does
-  take contributions.
-- **Write a skill** — **[MinisSkills](https://github.com/OpenMinis/MinisSkills)**
-  also takes contributions, and skills are how most people extend Minis
-  without touching the app at all.
-- **Talk to us** — the [Telegram group](https://t.me/+2NzhOJuzRyI1YmM1) is
-  where most day-to-day discussion happens.
+## 提交代码与文档
 
-## Filing a good issue
+1. 从计划修改的最新分支创建自己的工作分支。
+2. 让一次提交或 PR 聚焦一个问题，避免混入无关格式化、重命名或重构。
+3. 提交前检查差异，并补充与改动相关的测试或验证步骤。
+4. 在 PR 中说明动机、改动范围、关联 Issue、验证结果与已知限制；界面改动可附脱敏前后对比图。
 
-The more of this you can give us, the faster it gets fixed:
+增强功能目前在 [`feature/advanced-memory`](https://github.com/Steven-king123/OpenMinis/tree/feature/advanced-memory) 集成。针对该功能线的贡献，请以它为基础并将 PR 指向该分支；不要仅因 `main` 是默认分支就向旧基线提交重复实现。后续合入主线时会同步调整本说明。
 
-- Platform and version (Settings → About shows both)
-- What you expected, what happened instead
-- Steps to reproduce, or the prompt that triggered it
-- Which model / provider was selected, if relevant
-- Logs, if the app produced any (Settings → Logs)
+本 Fork 不沿用上游镜像仓库“不接受 PR”的规则，但是否采纳、何时合并由维护者按项目方向与验证情况决定。
 
-## Using the source
+## 改动约定
 
-The code is GPLv3. You are free to fork it, modify it and run your own build —
-see [BUILDING.md](BUILDING.md). The licence obliges you to publish the source
-of anything you distribute, and to keep it under GPLv3.
+- **优先保留上游能力与数据兼容性**：不要在未讨论的情况下移除 Agent、工具、沙箱或标准记忆能力。
+- **明确副作用**：模型调用、数据发送、权限与危险操作需要清楚告知；不要引入静默扫描历史聊天或未经说明的外部请求。
+- **保护记忆数据**：涉及存储、索引、编辑和删除时，应考虑版本冲突、手动保护、取消及迁移，不以清空用户数据作为常规修复。
+- **界面简洁**：显而易见的功能不堆说明；复杂概念按需帮助，费用、隐私与不可逆操作风险不能藏起来。
+- **本轮新增文案以中文和英文为主**：同步维护 `values` 与 `values-zh`，不要顺带覆盖其他语言的既有翻译。其他语言贡献可先讨论。
+- **尊重第三方授权**：引用代码或引入依赖前确认许可证，保留必要归属，并按需更新 [第三方授权清单](THIRD_PARTY_LICENSES.md)。
 
-We simply do not merge changes back through this repository.
+## 构建与验证
+
+完整环境与原生依赖准备见 [BUILDING.md](BUILDING.md)。项目包含沙箱及原生组件，首次构建并非只运行 Gradle 即可。
+
+- 运行与改动相关的单元测试；涉及界面时补充实机或模拟器验证。
+- 准确区分源码检查、单元测试、完整编译和实机验收，不把未执行项目写成“通过”。
+- 性能结论需注明设备、场景和测量方法，不用单次主观体验推导普遍提速比例。
+- 仓库现有构建工作流为手动触发。普通贡献不要擅自增加自动构建、发布或上传凭据的流程。
+- 自行构建请使用自己的签名，不依赖维护者私钥；签名不同的 APK 不能仅凭包名相同就覆盖安装。
+
+高级记忆的行为与使用边界见 [使用指南](docs/ADVANCED-MEMORY.md)。
+
+## 隐私与安全
+
+请勿在 Issue、PR 或提交中上传 API 密钥、令牌、签名私钥、密码、私人聊天、原始记忆库、完整用户备份或服务器连接配置。优先使用可复现的虚构样例和必要的脱敏日志。
+
+如果发现可能暴露用户数据或凭据的问题，请勿公开可利用的细节或真实受影响数据。优先使用仓库提供的私密报告渠道；若未提供，可先用不含敏感细节的 Issue 请求安全联系方式。不要假定本仓库已经启用了某项私密报告功能。
+
+## 许可证与上游生态
+
+贡献应与本项目的 [GNU GPL v3.0](LICENSE) 及所涉及组件的许可证兼容。提交你有权提供的内容，并保留上游和第三方版权声明；第三方代码不因进入本仓库而失去原有授权要求。
+
+技能与工作流分享也可按各自规则参与上游的 [MinisSkills](https://github.com/OpenMinis/MinisSkills) 和 [AwesomeMinis](https://github.com/OpenMinis/AwesomeMinis)。AuraMinis 的仓库贡献不会自动同步到官方 OpenMinis。
