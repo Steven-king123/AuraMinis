@@ -11,6 +11,7 @@
 
 ![AuraMinis 横版海报 留住记忆 重塑界面](assets/brand/poster-landscape.jpg)
 
+
 **AuraMinis** 是基于 [OpenMinis](https://github.com/OpenMinis/OpenMinis) 的非官方 Android AI 助手增强分支。在保留上游 Agent 架构与本地工具底座的基础上，围绕日常使用打磨，提供**更可控的长期记忆、更自由的聊天外观，以及更舒适的阅读与交互体验**。
 
 ## 不止于聊天
@@ -76,3 +77,5 @@
 **上游归属**：感谢 [OpenMinis](https://github.com/OpenMinis/OpenMinis) 提供核心 Agent 架构与工具体系。官方网站：[openminis.app](https://openminis.app)。部分界面与交互设计参考了 [LastChat](https://github.com/Cocolalilal/LastChat)；相关增强在 OpenMinis 代码基础上实现，并使用相应开源组件，第三方代码及依赖的授权以各自许可证为准。
 
 **许可证**：本项目沿用 [GNU GPL v3.0](LICENSE)。上游及第三方组件的版权与授权信息见 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)。
+
+![AuraMinis 品牌横幅](assets/brand/banner.png)
