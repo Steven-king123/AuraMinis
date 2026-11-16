@@ -9,7 +9,7 @@
 
 <p align="center">An unofficial enhanced Android AI assistant fork of OpenMinis.<br>Controllable memory, a customizable look, and comfortable reading.</p>
 
-![AuraMinis 品牌横幅](assets/brand/banner.png)
+![AuraMinis 横版海报 留住记忆 重塑界面](assets/brand/poster-landscape.jpg)
 
 **AuraMinis** 是基于 [OpenMinis](https://github.com/OpenMinis/OpenMinis) 的非官方 Android AI 助手增强分支。在保留上游 Agent 架构与本地工具底座的基础上，围绕日常使用打磨，提供**更可控的长期记忆、更自由的聊天外观，以及更舒适的阅读与交互体验**。
 
