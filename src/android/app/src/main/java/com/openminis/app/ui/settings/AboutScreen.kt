@@ -128,7 +128,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 icon = Icons.Outlined.Code,
                 iconColor = tileBlue,
                 title = stringResource(R.string.about_fork_repository),
-                onClick = { openExternalUrl(context, "https://github.com/Steven-king123/OpenMinis") },
+                onClick = { openExternalUrl(context, "https://github.com/Steven-king123/AuraMinis") },
                 trailing = { ExternalLinkIcon() },
             )
             SettingsRow(

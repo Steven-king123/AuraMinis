@@ -37,7 +37,7 @@ class AuraMinisBrandTests(unittest.TestCase):
 
     def test_about_keeps_upstream_and_separates_fork(self):
         source = ABOUT.read_text()
-        self.assertIn('https://github.com/Steven-king123/OpenMinis', source)
+        self.assertIn('https://github.com/Steven-king123/AuraMinis', source)
         self.assertIn('https://github.com/OpenMinis/OpenMinis', source)
         for key in ('about_fork_notice', 'about_upstream_attribution',
                     'about_fork_repository', 'about_upstream_repository'):

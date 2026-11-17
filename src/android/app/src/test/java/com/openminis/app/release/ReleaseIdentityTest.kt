@@ -16,7 +16,7 @@ class ReleaseIdentityTest {
         assertFalse(BuildConfig.SELF_UPDATE)
         assertFalse(BuildConfig.AUTO_UPDATE_CHECK)
         assertFalse(BuildConfig.IN_APP_INSTALL)
-        assertEquals("Steven-king123/OpenMinis", BuildConfig.RELEASE_REPO)
+        assertEquals("Steven-king123/AuraMinis", BuildConfig.RELEASE_REPO)
         if (BuildConfig.BUILD_TYPE == "release") {
             assertFalse(BuildConfig.DEBUG)
             assertFalse(BuildConfig.DEV_TOOLS)
@@ -25,7 +25,7 @@ class ReleaseIdentityTest {
 
     @Test fun forkFeedbackDoesNotTargetUpstreamMaintainers() {
         val settings = File("src/main/java/com/openminis/app/ui/settings/SettingsScreen.kt").readText()
-        assertTrue(settings.contains("https://github.com/Steven-king123/OpenMinis/issues/new"))
+        assertTrue(settings.contains("https://github.com/Steven-king123/AuraMinis/issues/new"))
         assertFalse(settings.contains("dev@openminis.app"))
         assertFalse(settings.contains("https://t.me/+2NzhOJuzRyI1YmM1"))
         val crashes = File("src/main/java/com/openminis/app/crash/CrashFrequencyDetector.kt").readText()

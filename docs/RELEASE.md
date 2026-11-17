@@ -2,7 +2,7 @@
 
 ## 安装与升级
 
-下载入口：[GitHub Releases](https://github.com/Steven-king123/OpenMinis/releases)。首个独立正式版本为 **1.0.0 / versionCode 44**，包名 `io.github.stevenking123.auraminis`，要求 Android 8.0+、ARM64。
+下载入口：[GitHub Releases](https://github.com/Steven-king123/AuraMinis/releases)。首个独立正式版本为 **1.0.0 / versionCode 44**，包名 `io.github.stevenking123.auraminis`，要求 Android 8.0+、ARM64。
 
 它是基于 OpenMinis 的非官方 Fork，**不覆盖官方版或旧 Minis Dev，也不自动继承其数据**。以后同一包名的升级需保持相同签名，更新前建议备份。当前关闭应用内自动检查、手动检查和 APK 自安装，请从本仓库 Release 手动获取安装包。
 

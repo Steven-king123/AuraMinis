@@ -60,14 +60,15 @@
 
 ## 获取、文档与构建
 
-[**下载 AuraMinis 1.0.0**](https://github.com/Steven-king123/OpenMinis/releases/tag/v1.0.0) · Android 8.0+ / ARM64。独立包可与旧版并存，不自动继承旧数据；安装与迁移说明见 [正式版指南](docs/RELEASE.md)。也可获取源码自行构建。
+[**下载 AuraMinis 1.0.0**](https://github.com/Steven-king123/AuraMinis/releases/tag/v1.0.0) · Android 8.0+ / ARM64。独立包可与旧版并存，不自动继承旧数据；安装与迁移说明见 [正式版指南](docs/RELEASE.md)。也可获取源码自行构建。
 
 | 资源 | 说明 |
 |---|---|
 | [高级记忆使用指南](docs/ADVANCED-MEMORY.md) | 记忆类型、模型配置、召回与整理 |
 | [正式版安装与构建](docs/RELEASE.md) | 独立包身份、数据迁移与 Release 构建 |
 | [完整构建说明](BUILDING.md) | Android 工具链与编译步骤 |
-| [问题反馈](https://github.com/Steven-king123/OpenMinis/issues) | 提交问题或改进建议 |
+| [问题反馈](https://github.com/Steven-king123/AuraMinis/issues) | 提交问题或改进建议 |
+| [二维码分享海报](assets/brand/poster-landscape-qr.jpg) | 扫码访问本仓库 |
 | [MinisSkills](https://github.com/OpenMinis/MinisSkills) · [AwesomeMinis](https://github.com/OpenMinis/AwesomeMinis) | 上游技能与社区资源 |
 
 ## 隐私、致谢与许可证

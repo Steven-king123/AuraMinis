@@ -6,7 +6,7 @@
 
 ## 问题反馈
 
-请先搜索 [已有 Issues](https://github.com/Steven-king123/OpenMinis/issues)，确认是否已有相同问题。反馈时尽量提供：
+请先搜索 [已有 Issues](https://github.com/Steven-king123/AuraMinis/issues)，确认是否已有相同问题。反馈时尽量提供：
 
 - 应用版本与来源分支、Android 版本，以及必要的设备和输入法信息。
 - 预期行为、实际行为、复现步骤与复现频率。
